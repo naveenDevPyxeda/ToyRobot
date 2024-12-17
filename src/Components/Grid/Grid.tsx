@@ -1,6 +1,8 @@
 import React from 'react';
-import { GridBase, GridCell, GridCellActive } from './GridStyles';
+
 import type { GridStateType } from '../../GlobalTypes';
+
+import { GridBase, GridCell, GridCellActive } from './GridStyles';
 
 interface PropsType {
   gridState: GridStateType;

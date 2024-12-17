@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { ToyRobotApp, Report } from './AppStyles';
+
 import { CommandHandler } from './Components/CommandInput/CommandHandler';
 import { Grid } from './Components/Grid/Grid';
+
+import { ToyRobotApp, Report } from './AppStyles';
 import type { GridStateType } from './GlobalTypes';
 
 const App: React.FC = () => {
@@ -20,7 +22,7 @@ const App: React.FC = () => {
       {gridState.reportPosition && (
         <Report>
           Report:
-          <strong>{` ${gridState.xCord}, ${gridState.yCord}, ${gridState.face}`}</strong>
+          <strong aria-label='report'>{` ${gridState.xCord}, ${gridState.yCord}, ${gridState.face}`}</strong>
         </Report>
       )}
       <CommandHandler gridState={gridState} setGridState={setGridState} />
