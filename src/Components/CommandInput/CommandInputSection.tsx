@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+
+import type { CommandType } from '../../GlobalTypes';
+
 import {
   EnterButton,
   InputError,
   InputLable,
   InputField,
 } from './CommandInputStyles';
-import type { CommandType } from '../../GlobalTypes';
 
 interface PropsType {
   error: string | null;
@@ -41,9 +43,9 @@ export const CommandInputSection: React.FC<PropsType> = (props) => {
     <>
       <InputLable>
         <p>Please type your commands here:</p>
-        {error && <InputError>{error}</InputError>}
+        {error && <InputError aria-label='command-error'>{error}</InputError>}
         <InputField
-          id="command-input"
+          aria-label="command-input"
           onChange={updateCommand}
           placeholder="Give your command"
           type="text"
