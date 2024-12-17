@@ -19,6 +19,10 @@ Build
 
 Open your terminal and run the 'yarn build' command to bundle the files and to create the build folder
 
+Test
+
+Run 'yarn test' to run the test cases included in the test suite. Test cases are added for both success and failure scenarios.
+
 Description of the project
 
 * The application is a simulation of a toy robot moving on a square tabletop, default of 5 units x 5 units
