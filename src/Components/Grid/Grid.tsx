@@ -1,49 +1,42 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useMemo } from 'react';
 
-import type { GridStateType } from '../../GlobalTypes';
-
-import { GridBase, GridCell, GridCellActive } from './GridStyles';
+import type { GridStateType } from '../../types/global-types';
+import { GridBase, GridCell, GridCellActive, RobotId } from '../../components/grid/GridStyles';
 
 interface PropsType {
   gridState: GridStateType;
 }
 
-export const Grid: React.FC<PropsType> = (props) => {
-  const {
-    gridState: { face, gridSize, isRobotPlaced, xCord, yCord },
-  } = props;
+// Memoize the Grid component, so that it only re-renders if the props change
+export const Grid: React.FC<PropsType> = React.memo(({ gridState }) => {
+  const { gridSize, robots } = gridState;
 
-  const getColumnCells = (rowNumber: number): JSX.Element[] => {
-    const cells = [];
-    let i = 0;
-
-    while (i < gridSize) {
-      if (i === xCord && rowNumber === yCord && isRobotPlaced && face) {
-        cells.push(<GridCellActive face={face} key={`col${rowNumber}${i}`} />);
-      } else {
-        cells.push(<GridCell key={`col${rowNumber}${i}`} />);
-      }
-      i++;
-    }
-
-    return cells;
-  };
-
-  const printGridRows = (): JSX.Element[] => {
-    const rows = [];
-    let i = gridSize - 1;
-
-    while (i >= 0) {
-      rows.push(<tr key={`row ${i}`}>{getColumnCells(i)}</tr>);
-      i--;
-    }
-
-    return rows;
-  };
+  const getColumnCells = useCallback((rowNumber: number): JSX.Element[] => {
+      // create a array map using the gridSize to optimize the perfomance of the cell generation functions
+      return Array.from({ length: gridSize }, (_, cellNumber) => {
+          const isRobotAtCell = robots.find((robot => robot.xCord === cellNumber && robot.yCord === rowNumber && robot.face && robot.isRobotPlaced))
+          if (isRobotAtCell) {
+            return <GridCellActive face={isRobotAtCell.face} key={`col${rowNumber}${cellNumber}`}>
+            <RobotId>{isRobotAtCell.id}</RobotId> </GridCellActive>;
+          }
+        return <GridCell key={`col${rowNumber}${cellNumber}`} />;
+      });
+  }, [robots, gridSize]);
+  
+  // Memoize this function, so it will compute the rows only if,
+  // the values in dependency array changes
+  const generateGridRows = useMemo(() => {
+    // create a array map using the gridSize to optimize the perfomance of the row generation functions
+    return Array.from({ length: gridSize }, (_, rowNumber) => {
+      const currentRow = gridSize - 1 - rowNumber;
+      return <tr key={`row${currentRow}`}>{getColumnCells(currentRow)}</tr>;
+    });
+  }, [getColumnCells, gridSize]);
 
   return (
     <GridBase>
-      <tbody>{printGridRows()}</tbody>
+      <tbody>{generateGridRows}</tbody>
     </GridBase>
   );
-};
+});
