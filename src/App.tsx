@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { CommandHandler } from './Components/CommandInput/CommandHandler';
-import { Grid } from './Components/Grid/Grid';
+import { CommandHandler } from './components/commandInput/CommandHandler';
+import { Grid } from './components/grid/Grid';
 
 import { ToyRobotApp, Report } from './AppStyles';
 import type { GridStateType } from './GlobalTypes';
