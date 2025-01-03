@@ -6,6 +6,6 @@ const ToyRobotApp = styled.div`
 
 const Report = styled.p`
   font-size: 16px;
-  margin: 30px;
+  margin: 20px;
 `;
 export { ToyRobotApp, Report };
