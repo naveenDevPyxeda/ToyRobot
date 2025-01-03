@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
 
-import type { CommandType } from '../../GlobalTypes';
-
+import type { CommandType } from '../../types/global-types';
 import {
   EnterButton,
   InputError,
   InputLable,
   InputField,
-} from './CommandInputStyles';
+} from '../../components/commandInput/CommandInputStyles';
 
 interface PropsType {
-  error: string | null;
-  handleCommand: (command: CommandType) => void;
+  error: string | null,
+  onEnter: (command: CommandType) => void;
 }
 
-export const CommandInputSection: React.FC<PropsType> = (props) => {
-  const { error, handleCommand } = props;
+const CommandInputSection: React.FC<PropsType> = (props) => {
+  const { error, onEnter } = props;
 
   const [command, setCommand] = useState('');
 
   const proceedWithCommand = (): void => {
     // Split the commands to identify each command
-    const [baseCommand, xCord, yCord, face] = command.trim().toUpperCase().split(/[ ,]+/);
+    const [baseCommand, id, xCord, yCord, face] = command.trim().toUpperCase().split(/[ ,]+/);
 
     const parsedCommand = {
       baseCommand,
@@ -29,9 +28,10 @@ export const CommandInputSection: React.FC<PropsType> = (props) => {
       face: face || undefined,
       xCord: xCord ? parseInt(xCord, 10) : undefined,
       yCord: yCord ? parseInt(yCord, 10) : undefined,
+      id: id ? parseInt(id, 10) : undefined,
     } as CommandType;
 
-    handleCommand(parsedCommand);
+    onEnter(parsedCommand);
     setCommand('');
   };
 
@@ -43,7 +43,6 @@ export const CommandInputSection: React.FC<PropsType> = (props) => {
     <>
       <InputLable>
         <p>Please type your commands here:</p>
-        {error && <InputError aria-label='command-error'>{error}</InputError>}
         <InputField
           aria-label="command-input"
           onChange={updateCommand}
@@ -51,10 +50,13 @@ export const CommandInputSection: React.FC<PropsType> = (props) => {
           type="text"
           value={command}
         />
+        {error && <InputError aria-label='command-error'>{error}</InputError>}
       </InputLable>
-      <EnterButton type="button" onClick={proceedWithCommand}>
+      <EnterButton onClick={proceedWithCommand}>
         Enter
       </EnterButton>
     </>
   );
 };
+
+export { CommandInputSection };

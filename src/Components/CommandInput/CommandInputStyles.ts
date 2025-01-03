@@ -1,11 +1,10 @@
 import styled from 'styled-components';
 
-const CommandLine = styled.div`
-`;
 
 const InputLable = styled.label`
   display: block;
   margin-bottom: 20px;
+  font-family: sans-serif;
 `;
 
 const InputField = styled.input`
@@ -17,11 +16,16 @@ const InputField = styled.input`
 
 const EnterButton = styled.button`
   background: #FFED29;
+  background: linear-gradient(45deg, #FFED29, #39d7ac);
   border: none;
   color: black;
   cursor: pointer;
   font-size: 16px;
   padding: 15px 25px;
+
+  &:hover {
+    background: linear-gradient(45deg, #FFED29, #4e9f3d);
+  }
 `;
 
 const InputError = styled.p`
@@ -32,6 +36,5 @@ export {
   EnterButton,
   InputError,
   InputField,
-  InputLable,
-  CommandLine,
+  InputLable
 };
