@@ -1,31 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { CommandHandler } from './Components/CommandInput/CommandHandler';
-import { Grid } from './Components/Grid/Grid';
+import { CommandHelp } from './components/commandHelp/CommandHelp';
+import { Grid } from './components/grid/Grid';
+import { useRobotState } from './hooks/RobotState';
 
 import { ToyRobotApp, Report } from './AppStyles';
-import type { GridStateType } from './GlobalTypes';
+import { CommandInputSection } from './components/commandInput/CommandInputSection';
+import { Card } from './styles/common-styles';
 
 const App: React.FC = () => {
-  // Since the table is a chart with x and y coordinates, we can treat it as a grid
-  // Make the grid size 5 as the default value is 5 by 5
-  // Assume that at the start, robot is not placed
-  const initialState: GridStateType = {
-    gridSize: 5,
-    isRobotPlaced: false,
-  };
-  const [gridState, setGridState] = useState(initialState);
+  const [state, dispatch] = useRobotState();
 
   return (
     <ToyRobotApp>
-      <Grid gridState={gridState} />
-      {gridState.reportPosition && (
+      <Card>
+      <Grid gridState={state} />
+      </Card>
+      {state.reportPosition && (
         <Report>
           Report:
-          <strong aria-label='report'>{` ${gridState.xCord}, ${gridState.yCord}, ${gridState.face}`}</strong>
+          <strong aria-label='report'>{state.reportPosition}</strong>
         </Report>
       )}
-      <CommandHandler gridState={gridState} setGridState={setGridState} />
+      <CommandInputSection error={state.error} onEnter={dispatch} />
+      <CommandHelp />
     </ToyRobotApp>
   );
 };

@@ -6,10 +6,15 @@ export enum MainCommand {
   Report = 'REPORT',
 }
 
+export enum DirectionCommand {
+  Left = 'LEFT',
+  Right = 'RIGHT',
+}
+
 export interface CommandType {
-  baseCommand: string;
+  baseCommand: MainCommand;
+  id: number;
   face?: DirectionofRobotFace;
-  error: string | null;
   xCord?: number;
   yCord?: number;
 }
@@ -21,11 +26,17 @@ export enum DirectionofRobotFace {
   West = 'WEST',
 }
 
+export interface Robot {
+  id: string,
+  isRobotPlaced: boolean;
+  face: DirectionofRobotFace;
+  xCord: number;
+  yCord: number;
+}
+
 export interface GridStateType {
   gridSize: number;
-  face?: DirectionofRobotFace;
-  reportPosition?: boolean;
-  isRobotPlaced: boolean;
-  xCord?: number;
-  yCord?: number;
-}  
+  error: string | null,
+  robots: Robot[],
+  reportPosition?: string;
+}
