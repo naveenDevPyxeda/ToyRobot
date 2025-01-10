@@ -33,34 +33,41 @@ const validateCommand = (xCord: number | undefined, yCord: number | undefined, f
 };
 
 const robotReducer = (state: GridStateType, action: any): GridStateType => {
+    // Reset errors and reportings when a new command is issued
+    const resetState = { ...state, error: null, reportPosition: undefined };
+    // Make sure that robotId is passed with every command
+    if (action.id === undefined || !Number.isInteger(action.id)) {
+        return { ...resetState, error: 'Please provide a valid robot id' };
+    }
     switch (action.baseCommand) {
         case 'PLACE': {
             const { xCord, yCord, face, id } = action;
-            const error = validateCommand(xCord, yCord, face, state, id);
+            const error = validateCommand(xCord, yCord, face, resetState, id);
             if (error) {
-                return { ...state, error: error };
+                return { ...resetState, error: error };
             }
 
-            const currentRobots = [...state.robots];
+            const currentRobots = [...resetState.robots];
             const robotIndex = currentRobots.findIndex((robot => robot.id === id));
+            // Check whether robot already exists in the system
+            // Better to keep current robot info in backend, good practice to handle high load
             if (robotIndex > -1) {
                 currentRobots[robotIndex] = { id, xCord, yCord, face, isRobotPlaced: true };
             } else {
                 currentRobots.push({ id, xCord, yCord, face, isRobotPlaced: true });
             }
             return {
-                ...state,
+                ...resetState,
                 robots: currentRobots
             };
         }
 
         case 'MOVE': {
             const { id } = action;
-            const robot = findRobotById(state.robots, id);
-            if (!robot?.isRobotPlaced || robot.xCord === undefined
-                || robot.yCord === undefined || robot.face === undefined) {
+            const robot = findRobotById(resetState.robots, id);
+            if (!robot?.isRobotPlaced) {
                 return {
-                    ...state,
+                    ...resetState,
                     error: 'Please place the robot first'
                 };
             }
@@ -79,25 +86,25 @@ const robotReducer = (state: GridStateType, action: any): GridStateType => {
 
             if (newX < 0 || newY < 0 || newX >= state.gridSize || newY >= state.gridSize) {
                 return {
-                    ...state,
+                    ...resetState,
                     error: 'You cannot move the robot out of the table'
                 };
             }
 
-            const currentRobots = state.robots.map((robot) => robot.id === id ? { ...robot, xCord: newX, yCord: newY } : robot);
+            const currentRobots = resetState.robots.map((robot) => robot.id === id ? { ...robot, xCord: newX, yCord: newY } : robot);
 
             return {
-                ...state,
+                ...resetState,
                 robots: currentRobots
             };
         }
 
         case 'LEFT': {
             const { id } = action;
-            const robot = findRobotById(state.robots, id);
-            if (!robot?.isRobotPlaced || !robot.face) {
+            const robot = findRobotById(resetState.robots, id);
+            if (!robot?.isRobotPlaced) {
                 return {
-                    ...state,
+                    ...resetState,
                     error: 'Cannot turn an unplaced robot'
                 };
             }
@@ -110,20 +117,20 @@ const robotReducer = (state: GridStateType, action: any): GridStateType => {
             };
 
             const newDirection = directionMapping[robot.face]?.[DirectionCommand.Left];
-            const currentRobots = state.robots.map((robot) => robot.id === id ? { ...robot, face: newDirection } : robot);
+            const currentRobots = resetState.robots.map((robot) => robot.id === id ? { ...robot, face: newDirection } : robot);
 
             return {
-                ...state,
+                ...resetState,
                 robots: currentRobots
             };
         }
 
         case 'RIGHT': {
             const { id } = action;
-            const robot = findRobotById(state.robots, id);
+            const robot = findRobotById(resetState.robots, id);
             if (!robot?.isRobotPlaced || !robot.face) {
                 return {
-                    ...state,
+                    ...resetState,
                     error: 'Cannot turn an unplaced robot'
                 };
             }
@@ -136,10 +143,10 @@ const robotReducer = (state: GridStateType, action: any): GridStateType => {
             };
 
             const newDirection = directionMapping[robot.face]?.[DirectionCommand.Right];
-            const currentRobots = state.robots.map((robot) => robot.id === id ? { ...robot, face: newDirection } : robot);
+            const currentRobots = resetState.robots.map((robot) => robot.id === id ? { ...robot, face: newDirection } : robot);
 
             return {
-                ...state,
+                ...resetState,
                 robots: currentRobots
             };
         }
@@ -147,16 +154,16 @@ const robotReducer = (state: GridStateType, action: any): GridStateType => {
         case 'REPORT': {
             const { id } = action;
             const robot = findRobotById(state.robots, id);
-            if (!robot?.isRobotPlaced || robot.xCord === undefined || robot.yCord === undefined || robot.face === undefined) {
+            if (!robot?.isRobotPlaced) {
                 return {
-                    ...state,
+                    ...resetState,
                     error: 'Please place the robot first to get the position'
                 };
             }
 
-            const report = ` Robot ${id} in position: (${robot.xCord}, ${robot.yCord}), is facing: ${robot.face}`;
+            const report = ` Robot ${id} in position: (${robot.xCord}, ${robot.yCord}) is facing: ${robot.face}`;
             return {
-                ...state,
+                ...resetState,
                 reportPosition: report
             };
         }
